@@ -3,7 +3,6 @@ import './App.scss';
 import { peopleFromServer } from './data/people';
 import { Person } from './types/Person';
 
-
 type AppProps = {
   debounceDelay?: number;
   onSelected?: (person: Person) => void;
@@ -34,7 +33,7 @@ export const App: React.FC<AppProps> = ({
     }
 
     return peopleFromServer.filter(person => {
-      return person.name.toLowerCase().includes(debouncedValue.toLowerCase());
+      return person.name.toLowerCase().includes(trimmedValue.toLowerCase());
     });
   }, [debouncedValue]);
 
