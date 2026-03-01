@@ -9,7 +9,10 @@ type AppProps = {
   onSelected?: (person: Person) => void;
 };
 
-export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
+export const App: React.FC<AppProps> = ({
+  debounceDelay = 300,
+  onSelected,
+}) => {
   const [inputValue, setInputValue] = useState('');
   const [debouncedValue, setDebouncedValue] = useState('');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -23,9 +26,17 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
     return () => clearTimeout(timer);
   }, [inputValue, debounceDelay]);
 
-  const filteredPeople = peopleFromServer.filter(person => {
-    return person.name.toLowerCase().includes(debouncedValue.toLowerCase());
-  });
+  const filteredPeople = React.useMemo(() => {
+    const trimmedValue = debouncedValue.trim();
+
+    if (trimmedValue === '') {
+      return [];
+    }
+
+    return peopleFromServer.filter(person => {
+      return person.name.toLowerCase().includes(debouncedValue.toLowerCase());
+    });
+  }, [debouncedValue]);
 
   let peopleToShow: Person[] = [];
 
@@ -82,6 +93,7 @@ export const App: React.FC<AppProps> = ({ debounceDelay = 300 }) => {
                   onMouseDown={() => {
                     setInputValue(person.name);
                     setSelectedPerson(person);
+                    onSelected?.(person);
                     setIsFocused(false);
                   }}
                 >
